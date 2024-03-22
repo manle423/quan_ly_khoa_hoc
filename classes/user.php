@@ -96,6 +96,29 @@ class User
         }
     }
 
+    public static function getPaging($conn,$limit,$offset)
+    {
+        try {
+            $sql = "select u.id, u.name, u.email, u.username, u.address, u.is_active, u.role_id 
+            from users u
+            limit :limit
+            offset :offset;";
+            $stmt = $conn->prepare($sql);
+            //limit: số record mỗi lần select
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            //offset: select từ record thứ mấy
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            if ($stmt->execute()) {
+                $users = $stmt->fetchAll();
+                return $users;
+            }
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
+
     public static function searchUser($conn, $search)
     {
         try {

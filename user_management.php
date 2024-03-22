@@ -14,11 +14,20 @@ if (!$conn) {
 }
 
 Auth::requireLogin();
+$total = $_SESSION['role_id'] == 1 ? Course::countAll($conn) : Course::count($conn);
+$limit = PAGE_SIZE;
+$currentpage = $_GET['page'] ?? 1;
+$config = [
+    'total' => $total,
+    'limit' => $limit,
+    'full' => false,
+
+];
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
     $search = $_GET['search'];
     $users = User::searchUser($conn, $search);
 }else{
-    $users = User::getAllUserInfo($conn);
+    $users = User::getPaging($conn, $limit, $limit, ($currentpage - 1) * $limit);
 }
 
 // echo '<pre>';
@@ -69,4 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
 <?php else : ?>
     <p>Không tìm thấy kết quả phù hợp</p>
 <?php endif; ?>
+<div class='content'>
+    <?php
+    $page = new Pagination($config);
+    echo $page->getPagination1();
+    ?>
+</div>
 <? layouts('footer');
