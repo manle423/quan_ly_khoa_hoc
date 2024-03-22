@@ -84,4 +84,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
     echo $page->getPagination1();
     ?>
 </div>
+<button class="btnSubmit" id="btnAddUser">Thêm người dùng</button>
 <? layouts('footer');
