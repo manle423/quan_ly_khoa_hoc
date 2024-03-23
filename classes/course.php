@@ -141,7 +141,7 @@ class Course
             $sql = "select c.id, c.name, c.description, c.price, c.image, c.video, c.duration, 
                     categories.name as category_name, c.deleted
                     from courses c
-                    join categories ON c.category_id = categories.id
+                    join categories on c.category_id = categories.id
                     where (c.name like :search_term or c.description like :search_term) ";
             if (!Auth::isAdmin()) {
                 $sql .= "and c.deleted = false ";
@@ -431,7 +431,7 @@ class Course
             $sql = "select c.id, c.name, c.description, c.price, c.image, c.video, c.duration, 
                     categories.name as category_name, c.deleted, count(o.course_id) AS orders_count
                     from courses c
-                    left join orders o ON c.id = o.course_id
+                    left join orders o on c.id = o.course_id
                     join categories on c.category_id = categories.id 
                     where c.deleted = false
                     group by c.id
@@ -457,7 +457,7 @@ class Course
             $sql = "select c.id, c.name, c.description, c.price, c.image, c.video, c.duration, 
                     categories.name as category_name, c.deleted, count(o.course_id) AS orders_count
                     from courses c
-                    left join orders o ON c.id = o.course_id
+                    left join orders o on c.id = o.course_id
                     join categories on c.category_id = categories.id 
                     group by c.id
                     order by orders_count desc, c.name asc
@@ -480,21 +480,21 @@ class Course
     {
         try {
             $offset = max($offset, 0);
-            $sql = "SELECT c.id, c.name, c.description, c.price, c.image, c.video, c.duration, 
-                categories.name AS category_name, c.deleted
-                FROM courses c
-                JOIN categories ON c.category_id = categories.id
-                LEFT JOIN orders o ON c.id = o.course_id
-                WHERE (c.name LIKE :search_term OR c.description LIKE :search_term) ";
+            $sql = "select c.id, c.name, c.description, c.price, c.image, c.video, c.duration, 
+                categories.name as category_name, c.deleted
+                from courses c
+                join categories on c.category_id = categories.id
+                left join orders o on c.id = o.course_id
+                where (c.name like :search_term or c.description like :search_term) ";
 
             if (!Auth::isManager()) {
-                $sql .= "AND c.deleted = false ";
+                $sql .= "and c.deleted = false ";
             }
 
-            $sql .= "GROUP BY c.id
-                 ORDER BY COUNT(o.course_id) DESC, c.name ASC
-                 LIMIT :limit
-                 OFFSET :offset";
+            $sql .= "group by c.id
+                 order by count(o.course_id) desc, c.name asc
+                 limit :limit
+                 offset :offset";
 
             $stmt = $conn->prepare($sql);
             $stmt->bindValue(':search_term', "%$search%", PDO::PARAM_STR);
@@ -506,6 +506,77 @@ class Course
         } catch (PDOException $ex) {
             echo $ex->getMessage();
             return null;
+        }
+    }
+
+    public static function searchByCategoryAndTerm($conn, $search, $category_id, $limit, $offset)
+    {
+        try {
+            $sql = "select c.id, c.name, c.description, c.price, c.image, c.video, c.duration, 
+                    categories.name as category_name, c.deleted, count(o.course_id) as orders_count
+                    from courses c
+                    left join orders o on c.id = o.course_id
+                    join categories on c.category_id = categories.id 
+                    where c.category_id = :category_id
+                    and (c.name like :search_term or c.description like :search_term)
+            ";
+
+            if (!Auth::isManager()) {
+                $sql .= "and c.deleted = false ";
+            }
+
+            $sql .= "group by c.id
+                    order by orders_count asc, c.name asc
+                    limit :limit
+                    offset :offset;";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':search_term', "%$search%", PDO::PARAM_STR);
+            $stmt->bindValue(':category_id', $category_id, PDO::PARAM_INT);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $courses;
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public static function searchFullCategory($conn, $search, $limit, $offset)
+    {
+        try {
+            $sql = "select c.id, c.name, c.description, c.price, c.image, c.video, c.duration, 
+                    categories.name as category_name, c.deleted, count(o.course_id) as orders_count
+                    from courses c
+                    left join orders o on c.id = o.course_id
+                    join categories on c.category_id = categories.id 
+                    and (c.name like :search_term or c.description like :search_term)
+            ";
+
+            if (!Auth::isManager()) {
+                $sql .= "and c.deleted = false ";
+            }
+
+            $sql .= "group by c.id
+                    order by orders_count asc, c.name asc
+                    limit :limit
+                    offset :offset;";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':search_term', "%$search%", PDO::PARAM_STR);
+            $stmt->bindValue(':category_id', $category_id, PDO::PARAM_INT);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $courses;
+        } catch (PDOException $e) {
+            echo $e->getMessage();
         }
     }
 }
