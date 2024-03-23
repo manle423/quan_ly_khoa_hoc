@@ -202,9 +202,9 @@ class User
             // Truy vấn cập nhật mật khẩu trong cơ sở dữ liệu
             $sql = "update users set password = :password where id = :id";
             $stmt = $conn->prepare($sql);
-            $stmt->bindValue(":password", $hashedPassword);
-            $stmt->bindValue(":id", $id);
-
+            $stmt->bindValue(":password", $hashedPassword,PDO::PARAM_STR);
+            $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+            Dialog::show("Password changed");
             return $stmt->execute();
         } catch (PDOException $e) {
             $e->getMessage();
