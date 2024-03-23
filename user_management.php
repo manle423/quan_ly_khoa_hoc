@@ -3,6 +3,8 @@ require "inc/init.php";
 $conn = require "inc/db.php";
 Auth::requireLogin();
 
+$roles = Role::getRole($conn);
+
 if (!Auth::isAdmin()) {
     Redirect::to('index');
 }
@@ -21,25 +23,59 @@ $config = [
     'total' => $total,
     'limit' => $limit,
     'full' => false,
-
 ];
+
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
-    $search = $_GET['search'];
-    $users = User::searchUser($conn, $search);
+    $role = isset($_GET['role']) ? $_GET['role'] : '';
+    $status = isset($_GET['status']) ? $_GET['status'] : '';
+    $search = isset($_GET['search']) ? $_GET['search'] : '';
+    $users = User::searchByRoleAndStatus($conn, $search, $role, $status, $limit, ($currentpage - 1) * $limit);
 } else {
     $users = User::getPaging($conn, $limit, ($currentpage - 1) * $limit);
 }
+
+// if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
+//     $role = isset($_GET['role']) ? $_GET['role'] : '';
+//     $status = isset($_GET['status']) ? $_GET['status'] : '';
+//     $search = isset($_GET['search']) ? $_GET['search'] : '';
+//     $users = User::searchByRoleAndStatus($conn, $search, $role, $status, $limit, ($currentpage - 1) * $limit);
+// } else {
+//     $users = User::getPaging($conn, $limit, ($currentpage - 1) * $limit);
+// }
 
 // echo '<pre>';
 // print_r($users);
 // echo '</pre>';
 
+// foreach ($status as $key => $value) {
+//     echo $value . '<br>';
+// }
+
 ?>
 <? layouts(); ?>
-<form action="" method="get">
-    <input type="text" name="search" id="search" placeholder="Tìm kiếm người dùng">
-    <button type="submit" class='btnSubmit'>Tìm kiếm</button>
+
+
+<form action="" method="get" class="search-container">
+    <input value="<?= isset($_GET['search']) ? $_GET['search'] : ''; ?>" type="text" name="search" id="search" placeholder="<?= isset($_GET['search']) ? $_GET['search'] : 'Tìm kiếm người dùng'; ?>">
+    <select name="role" id="role">
+        <option value="" <?= !isset($_GET['role']) ? 'selected' : ''; ?>>Tất cả vai trò</option>
+        <?php foreach ($roles as $role) : ?>
+            <option value="<?= $role['id'] ?>" <?= isset($_GET['role']) && $_GET['role'] == $role['id'] ? 'selected' : ''; ?>><?= $role['name'] ?></option>
+        <?php endforeach; ?>
+    </select>
+    <select name="status" id="status">
+        <option value="" <?php echo !isset($_GET['status']) ? 'selected' : ''; ?>>Tất cả trạng thái</option>
+        <option value="1">Active</option>
+        <option value="0">Inactive</option>
+    </select>
+    </select>
+
+
+    <button type="submit" class='btnSubmit'>Lọc</button>
 </form>
+
+
+
 <h1>Danh sách người dùng</h1>
 <?php if (!empty($users)) : ?>
     <table>
@@ -63,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
                     <td><?php echo $user['address']; ?></td>
                     <td><?php echo $user['is_active'] == 1 ? 'Active' : 'Inactive'; ?></td>
                     <td><?php echo Role::getRoleName($conn, $user['role_id']); ?></td>
-                    
+
                     <td>
                         <?php if ($user['is_active'] == false) : ?>
                             <button value="<?php echo $user['id']; ?>" name="id" id="btnActive" class="btnCRUD">Mở khoá</button>
@@ -97,4 +133,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
     ?>
 </div>
 <button class="btnSubmit" id="btnAddUser">Thêm người dùng</button>
-<? layouts('footer');
+<? layouts('footer'); ?>
+<style>
+    .search-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .search-container select {
+        padding: 10px;
+        margin-right: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+</style>
