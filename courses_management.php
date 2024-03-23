@@ -14,7 +14,7 @@ Auth::requireLogin();
 layouts();
 
 $conn = require 'inc/db.php';
-$total = $_SESSION['role_id'] == 1 ? Course::countAll($conn) : Course::count($conn);
+$total = Auth::isManager() ? Course::countAll($conn) : Course::count($conn);
 $limit = PAGE_SIZE;
 $currentpage = $_GET['page'] ?? 1;
 $config = [
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
     $courses = Course::searchPopularPaging($conn, $search, $limit, ($currentpage - 1) * $limit);
     // $courses = Course::searchCourse($conn, $search);
 } else {
-    $courses = $_SESSION['role_id'] == 1 ?
+    $courses = Auth::isManager() ?
         Course::popularCoursesAll($conn, $limit, ($currentpage - 1) * $limit) :
         Course::popularCourses($conn, $limit, ($currentpage - 1) * $limit);
 }
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
 </form>
 
 <?php
-if (Auth::isAdmin()) {
+if (Auth::isManager()) {
     require 'courses_admin.php';
 } else {
     require 'courses_user.php';
@@ -53,7 +53,7 @@ if (Auth::isAdmin()) {
     echo $page->getPagination1();
     ?>
 </div>
-<?php if ($_SESSION['role_id'] == 1) : ?>
+<?php if (Auth::isManager()) : ?>
     <button class="btnSubmit" id="btnAddCourse">Thêm khóa học</button>
 <?endif;?>
 

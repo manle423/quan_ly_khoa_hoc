@@ -46,4 +46,10 @@ class Auth
         }
         return true;
     }
+    public static function isUser(){
+        if(!($_SESSION['role_id'] == 2)){
+            return false;
+        }
+        return true;
+    }
 }

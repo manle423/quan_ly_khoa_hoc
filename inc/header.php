@@ -30,23 +30,21 @@
 
         <nav class="navbar">
             <a href="index.php">Home</a>
+            <a href="myaccount.php">My Account</a>
 
-            <? if (Auth::isLoggedIn()) : ?>
-                <a href="courses_management.php">Courses</a>
-                <a href="myaccount.php">My Account</a>
-                <? if ($_SESSION['role_id'] == 1) : ?>
-                    <a href="user_management.php" class="text">Users</a>
-                <? elseif ($_SESSION['role_id'] == 2) : ?>
+            <?php if (Auth::isLoggedIn()) : ?>
+                <?php if (Auth::isAdmin()) : ?>
+                    <a href="user_management.php" class="text">User Management</a>
+                <?php elseif (Auth::isUser()) : ?>
+                    <a href="courses_management.php">Courses</a>
                     <a href="user_orders.php" class="text">Orders</a>
-                <? endif; ?>
+                <?php elseif (Auth::isManager()) : ?>
+                    <a href="courses_management.php">Courses</a>
+                <?php endif; ?>
                 <a href="logout.php" class="text" onclick="return confirmLogout();">Logout</a>
-
             <? else : ?>
-                <a href=" login.php">Login</a>
-            <? endif; ?>
-
-            <!-- <a>Liên hệ</a> -->
-
+                <a href="login.php">Login</a>
+            <?php endif; ?>
         </nav>
 
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>

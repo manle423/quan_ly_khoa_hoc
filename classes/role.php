@@ -19,15 +19,33 @@ class Role
 
     public static function getRole($conn)
     {
-        try{
+        try {
             $sql = "select * from roles";
             $stmt = $conn->prepare($sql);
-            if($stmt->execute()){
+            if ($stmt->execute()) {
                 $roles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 return $roles;
             }
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+            return null;
+        }
+    }
 
-        }catch(PDOException $e){
+    public static function getRoleName($conn, $id)
+    {
+        try {
+            $sql = "SELECT name FROM roles WHERE id = :id";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            if ($stmt->execute()) {
+                $role = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($role) {
+                    return $role['name'];
+                }
+            }
+            return 'Unknown';
+        } catch (PDOException $e) {
             echo $e->getMessage();
             return null;
         }

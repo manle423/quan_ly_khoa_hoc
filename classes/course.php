@@ -81,7 +81,7 @@ class Course
             from courses c
             join categories on c.category_id = categories.id 
             where c.deleted = false";
-            if ($_SESSION['role_id'] == 1) {
+            if (Auth::isManager()) {
                 $sql .= " or deleted = true";
             }
             $stmt = $conn->prepare($sql);
@@ -121,7 +121,7 @@ class Course
                   from courses c
                   join categories on c.category_id = categories.id
                   where (c.name like :search_term or c.description like :search_term)";
-            if (!$_SESSION['role_id'] == 1) {
+            if (!Auth::isAdmin()) {
                 $sql .= " and c.deleted = false )";
             }
             $stmt = $conn->prepare($sql);
@@ -143,7 +143,7 @@ class Course
                     from courses c
                     join categories ON c.category_id = categories.id
                     where (c.name like :search_term or c.description like :search_term) ";
-            if (!$_SESSION['role_id'] == 1) {
+            if (!Auth::isAdmin()) {
                 $sql .= "and c.deleted = false ";
             }
             $sql .= "limit :limit
@@ -484,7 +484,7 @@ class Course
                 LEFT JOIN orders o ON c.id = o.course_id
                 WHERE (c.name LIKE :search_term OR c.description LIKE :search_term) ";
                 
-        if (!$_SESSION['role_id'] == 1) {
+        if (!Auth::isManager()) {
             $sql .= "AND c.deleted = false ";
         }
         

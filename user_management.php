@@ -14,7 +14,7 @@ if (!$conn) {
 }
 
 Auth::requireLogin();
-$total = $_SESSION['role_id'] == 1 ? User::countAll($conn) : User::countUsers($conn);
+$total = Auth::isAdmin() ? User::countAll($conn) : User::countUsers($conn);
 $limit = PAGE_SIZE;
 $currentpage = $_GET['page'] ?? 1;
 $config = [
@@ -26,7 +26,7 @@ $config = [
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
     $search = $_GET['search'];
     $users = User::searchUser($conn, $search);
-}else{
+} else {
     $users = User::getPaging($conn, $limit, ($currentpage - 1) * $limit);
 }
 
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
 ?>
 <? layouts(); ?>
 <form action="" method="get">
-    <input type="text" name="search" id="search" placeholder="Tìm kiếm khóa học">
+    <input type="text" name="search" id="search" placeholder="Tìm kiếm người dùng">
     <button type="submit" class='btnSubmit'>Tìm kiếm</button>
 </form>
 <h1>Danh sách người dùng</h1>
@@ -62,7 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
                     <td><?php echo $user['username']; ?></td>
                     <td><?php echo $user['address']; ?></td>
                     <td><?php echo $user['is_active'] == 1 ? 'Active' : 'Inactive'; ?></td>
-                    <td><?php echo $user['role_id'] == 1 ? 'Admin' : 'User'; ?></td>
+                    <td><?php echo Role::getRoleName($conn, $user['role_id']); ?></td>
+                    
                     <td>
                         <?php if ($user['is_active'] == false) : ?>
                             <button value="<?php echo $user['id']; ?>" name="id" id="btnActive" class="btnCRUD">Mở khoá</button>
@@ -74,16 +75,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
                 </tr>
             <?php endforeach; ?>
         </tbody>
-        <?if (!isset($_GET['search'])) :?>
+        <? if (!isset($_GET['search'])) : ?>
             <tfoot>
-            <tr>
-                <th colspan=4 style="text-align:center;">Tổng số khóa học: </td>
-                <td colspan=3 style=><? echo $config['total']?></td>
-            </tr>
-            
-        </tfoot>
-        <?endif;?>
-        
+                <tr>
+                    <th colspan=4 style="text-align:center;">Tổng số người dùng: </td>
+                    <td colspan=3 style=><? echo $config['total'] ?></td>
+                </tr>
+
+            </tfoot>
+        <? endif; ?>
+
     </table>
     </table>
 <?php else : ?>
