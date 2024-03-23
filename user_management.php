@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
     $search = $_GET['search'];
     $users = User::searchUser($conn, $search);
 }else{
-    $users = User::getPaging($conn, $limit, $limit, ($currentpage - 1) * $limit);
+    $users = User::getPaging($conn, $limit, ($currentpage - 1) * $limit);
 }
 
 // echo '<pre>';
