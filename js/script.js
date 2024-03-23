@@ -301,6 +301,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+  var btn = document.getElementById("btnAddUser");
+  if (btn) {
+    btn.addEventListener("click", function () {
+      window.location.href = "adduser.php";
+    });
+  }
+});
+
 
 document.addEventListener("DOMContentLoaded", function () {
   var buttons = document.querySelectorAll("#btnDeleteCourse");

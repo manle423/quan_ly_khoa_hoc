@@ -14,11 +14,20 @@ if (!$conn) {
 }
 
 Auth::requireLogin();
+$total = $_SESSION['role_id'] == 1 ? User::countAll($conn) : User::countUsers($conn);
+$limit = PAGE_SIZE;
+$currentpage = $_GET['page'] ?? 1;
+$config = [
+    'total' => $total,
+    'limit' => $limit,
+    'full' => false,
+
+];
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
     $search = $_GET['search'];
     $users = User::searchUser($conn, $search);
 }else{
-    $users = User::getAllUserInfo($conn);
+    $users = User::getPaging($conn, $limit, ($currentpage - 1) * $limit);
 }
 
 // echo '<pre>';
@@ -65,8 +74,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
                 </tr>
             <?php endforeach; ?>
         </tbody>
+        <?if (!isset($_GET['search'])) :?>
+            <tfoot>
+            <tr>
+                <th colspan=4 style="text-align:center;">Tổng số khóa học: </td>
+                <td colspan=3 style=><? echo $config['total']?></td>
+            </tr>
+            
+        </tfoot>
+        <?endif;?>
+        
+    </table>
     </table>
 <?php else : ?>
     <p>Không tìm thấy kết quả phù hợp</p>
 <?php endif; ?>
+<div class='content'>
+    <?php
+    $page = new Pagination($config);
+    echo $page->getPagination1();
+    ?>
+</div>
+<button class="btnSubmit" id="btnAddUser">Thêm người dùng</button>
 <? layouts('footer');

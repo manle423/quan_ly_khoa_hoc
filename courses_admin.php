@@ -1,4 +1,4 @@
-<? 
+<?
 if (!isset($_SESSION['courses_management_access'])) {
     header("Location: index.php");
 }
@@ -47,6 +47,15 @@ if (!isset($_SESSION['courses_management_access'])) {
                 </tr>
             <? endforeach; ?>
         </tbody>
+        <? if (!isset($_GET['search'])) : ?>
+            <tfoot>
+                <tr>
+                    <th colspan=4 style="text-align:center;">Tổng số khóa học: </td>
+                    <td colspan=3 style=><? echo $config['total'] ?></td>
+                </tr>
+
+            </tfoot>
+        <? endif; ?>
     </table>
 <?php else : ?>
     <p>Không tìm thấy kết quả phù hợp</p>
