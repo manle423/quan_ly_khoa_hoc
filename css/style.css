@@ -148,6 +148,7 @@ td img {
     border-radius: 50%;
 
     vertical-align: middle;
+    position: relative;
 }
 
 table,
@@ -165,6 +166,7 @@ thead th {
     background-color: #d5d1defe;
     cursor: pointer;
     text-transform: capitalize;
+    z-index: 2;
 }
 
 tbody tr:nth-child(even) {
