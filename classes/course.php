@@ -545,38 +545,4 @@ class Course
         }
     }
 
-    public static function searchFullCategory($conn, $search, $limit, $offset)
-    {
-        try {
-            $sql = "select c.id, c.name, c.description, c.price, c.image, c.video, c.duration, 
-                    categories.name as category_name, c.deleted, count(o.course_id) as orders_count
-                    from courses c
-                    left join orders o on c.id = o.course_id
-                    join categories on c.category_id = categories.id 
-                    and (c.name like :search_term or c.description like :search_term)
-            ";
-
-            if (!Auth::isManager()) {
-                $sql .= "and c.deleted = false ";
-            }
-
-            $sql .= "group by c.id
-                    order by orders_count asc, c.name asc
-                    limit :limit
-                    offset :offset;";
-
-            $stmt = $conn->prepare($sql);
-            $stmt->bindValue(':search_term', "%$search%", PDO::PARAM_STR);
-            $stmt->bindValue(':category_id', $category_id, PDO::PARAM_INT);
-            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-            $stmt->execute();
-
-            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            return $courses;
-        } catch (PDOException $e) {
-            echo $e->getMessage();
-        }
-    }
 }
