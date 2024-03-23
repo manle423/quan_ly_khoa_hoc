@@ -12,7 +12,7 @@ layouts();
 $user_id = $_SESSION["user_id"];
 $total = Order::countUserOrder($conn, $user_id);
 $limit = PAGE_SIZE;
-$currentpage = $_GET['page'] ?? 1;
+$currentpage = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1 ? $_GET['page'] : 1;
 $config = [
     'total' => $total,
     'limit' => $limit,

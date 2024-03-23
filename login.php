@@ -16,8 +16,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn = require "inc/db.php";
         if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
             $rs = User::authenticatebyemail($conn, $identifier, $password);
+            echo "hmm";
         } else {
             $rs = User::authenticatebyusername($conn, $identifier, $password);
+            echo "k phai email";
         }
 
         // if ($rs) {

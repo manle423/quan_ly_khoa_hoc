@@ -13,10 +13,9 @@ Auth::requireLogin();
 
 layouts();
 
-$conn = require 'inc/db.php';
 $total = Auth::isManager() ? Course::countAll($conn) : Course::count($conn);
 $limit = PAGE_SIZE;
-$currentpage = $_GET['page'] ?? 1;
+$currentpage = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1 ? $_GET['page'] : 1;
 $config = [
     'total' => $total,
     'limit' => $limit,

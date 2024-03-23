@@ -34,8 +34,18 @@ if (!isset($_SESSION['courses_management_access'])) {
                     <td class='shortcell'><?php echo $course['duration']; ?></td>
                     <td class='shortcell'><?php echo $course['category_name']; ?></td>
                     <td class='shortcell'>
-                        <button value="<? echo $course['id'] ?>" name="id" id="btnBuyCourse" class='btnCRUD'>Mua khoá học</button>
+                        <?php
+                        $order = new Order();
+                        $user_id = $_SESSION['user_id'];
+                        $course_id = $course['id'];
+                        if ($order->userHasBoughtCourse($conn, $user_id, $course_id)) {
+                            echo '<button value="' . $course['id'] . '" name="id" id="btnOwnedCourse" class="btnCRUD" disabled>Đã sở hữu</button>';
+                        } else {
+                            echo '<button value="' . $course['id'] . '" name="id" id="btnBuyCourse" class="btnCRUD">Mua khoá học</button>';
+                        }
+                        ?>
                     </td>
+
                 </tr>
             <? endforeach; ?>
         </tbody>

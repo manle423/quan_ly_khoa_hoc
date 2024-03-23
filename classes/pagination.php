@@ -157,6 +157,10 @@ class Pagination
         $totalPages = $this->gettotalPage();
         $currentPage = $this->getCurrentPage();
 
+        if ($currentPage < 1) {
+            $currentPage = 1;
+        }
+
         if (!$this->config['full']) {
             $data .= $this->getPageLink(1);
         }
@@ -182,12 +186,20 @@ class Pagination
 
 
         return '<ul class="main-nav">' .
+            // $this->getPrePage() .
+            // $data .
+            // $this->getNextPage() .
+            // '<li class="item"><form action="' . $_SERVER['PHP_SELF'] . '" method="GET">' .
+            // '<input type="text" name="' . $this->config['querystring'] . '" class="page-input" value="' . $currentPage . '">' .
+            // '<input type="submit" value="Go" class="go-button"></form></li>' .
+            // '</ul>';
             $this->getPrePage() .
             $data .
             $this->getNextPage() .
-            '<li class="item"><form action="' . $_SERVER['PHP_SELF'] . '" method="GET">' .
-            '<input type="text" name="' . $this->config['querystring'] . '" class="page-input" value="' . $currentPage . '">' .
-            '<input type="submit" value="Go" class="go-button"></form></li>' .
+            '<li class="item"><form action="' . $_SERVER['PHP_SELF'] . '" method="GET" onsubmit="return validatePageInput();">' .
+            '<input type="text" name="' . $this->config['querystring'] . '" id="pageInput" class="page-input" value="' . $currentPage . '">' .
+            '<input type="submit" value="Go" class="go-button">' .
+            '</form></li>' .
             '</ul>';
     }
 
@@ -203,12 +215,20 @@ class Pagination
                 '">' . $page . '</a></li>';
         }
     }
-    
 }
-
-
-
 ?>
+
+<script>
+    function validatePageInput() {
+        var pageInput = document.getElementById("pageInput").value;
+        if (isNaN(pageInput) || pageInput < 1) {
+            document.getElementById("pageInput").value = 1
+        }
+        return true;
+    }
+</script>
+
+
 <style>
     .main-nav {
         list-style: none;

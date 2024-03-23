@@ -14,9 +14,10 @@ if (!$conn) {
 }
 
 Auth::requireLogin();
-$total = Auth::isAdmin() ? User::countAll($conn) : User::countUsers($conn);
+// $total = Auth::isAdmin() ? User::countAll($conn) : User::countUsers($conn);
+$total = User::countAll($conn);
 $limit = PAGE_SIZE;
-$currentpage = $_GET['page'] ?? 1;
+$currentpage = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] >= 1 ? $_GET['page'] : 1;
 $config = [
     'total' => $total,
     'limit' => $limit,
