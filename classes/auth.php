@@ -39,4 +39,11 @@ class Auth
         }
         return true;
     }
+
+    public static function isManager(){
+        if(!($_SESSION['role_id'] == 3)){
+            return false;
+        }
+        return true;
+    }
 }

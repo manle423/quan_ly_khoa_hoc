@@ -2,6 +2,8 @@
 require "inc/init.php";
 $conn = require "inc/db.php";
 
+$_SESSION['courses_management_access'] = true;
+
 // Kiểm tra kết nối
 if (!$conn) {
     die("Kết nối không thành công:");
@@ -27,74 +29,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
     // $courses = Course::searchCourse($conn, $search);
 } else {
     $courses = $_SESSION['role_id'] == 1 ?
-        Course::getPagingAll($conn, $limit, ($currentpage - 1) * $limit) :
-        Course::getPaging($conn, $limit, ($currentpage - 1) * $limit);
+        Course::popularCoursesAll($conn, $limit, ($currentpage - 1) * $limit) :
+        Course::popularCourses($conn, $limit, ($currentpage - 1) * $limit);
 }
 ?>
 <form action="" method="get">
     <input type="text" name="search" id="search" placeholder="Tìm kiếm khóa học">
     <button type="submit" class='btnSubmit'>Tìm kiếm</button>
 </form>
-<? if(Auth::isAdmin()) : ?>
-<h1>Quản lý khoá học</h1>
-<? else :?>
-<h1>Các khoá học hiện hành</h1>
-<? endif; ?>
-<?php if (!empty($courses)) : ?>
-    <table>
-        <thead>
-            <tr>
-                <th class="shortcell">Tên</th>
-                <th class="shortcell">Mô tả</th>
-                <th class="shortcell">Giá</th>
-                <th class="shortcell">Hình ảnh</th>
-                <th class="shortcell">Thời lượng</th>
-                <th class="shortcell">Loại khóa học</th>
-                <?php if (Auth::isLoggedIn() && $_SESSION['role_id'] == 2) : ?>
-                    <th>Mua khóa học</th>
-                <?php elseif (Auth::isLoggedIn() && $_SESSION['role_id'] == 1) : ?>
-                    <th class="shortcell">Chức năng</th>
-                <?php endif; ?>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($courses as $course) : ?>
-                <tr>
-                    <td><?php echo $course['name']; ?></td>
-                    <td><?php echo $course['description']; ?></td>
-                    <td><?php echo $course['price']; ?></td>
-                    <td>
-                        <? if ($course['image'] && file_exists("uploads/" . $course['image'])) : ?>
-                            <img src="uploads/<? echo $course['image'] ?>" width="80" height="80">
-                        <? else : ?>
-                            <img src="images/noimage.png" width="80" height="80">
-                        <? endif; ?>
-                    </td>
-                    <td class='shortcell'><?php echo $course['duration']; ?></td>
-                    <td class='shortcell'><?php echo $course['category_name']; ?></td>
-                    <?php if (Auth::isLoggedIn() && $_SESSION['role_id'] == 2) : ?>
-                        <td class='shortcell'>
-                            <button value="<? echo $course['id'] ?>" name="id" id="btnBuyCourse" class='btnCRUD'>Mua khoá học</button>
-                        </td>
-                    <?php elseif (Auth::isLoggedIn() && $_SESSION['role_id'] == 1) : ?>
-                        <td class='shortcell'>
-                            <button value="<? echo $course['id'] ?>" name="id" id="btnChangeCourse" class='btnCRUD'>Sửa khoá học</button>
-                            <button value="<? echo $course['id'] ?>" name="id" id="btnDeleteCourse" class='btnCRUD'>Xoá khoá học</button>
-                            <button value="<? echo $course['id'] ?>" name="id" id="btnEditImage" class='btnCRUD'>Sửa hình</button>
-                            <?php if ($course['deleted'] == false) : ?>
-                                <button value="<?php echo $course['id']; ?>" name="id" id="btnHideCourse" class='btnCRUD'>Ẩn khóa học</button>
-                            <?php else : ?>
-                                <button value="<?php echo $course['id']; ?>" name="id" id="btnShowCourse" class='btnCRUD'>Hiện khóa học</button>
-                            <?php endif; ?>
-                        </td>
-                    <?php endif; ?>
-                </tr>
-            <? endforeach; ?>
-        </tbody>
-    </table>
-<?php else : ?>
-    <p>Không tìm thấy kết quả phù hợp</p>
-<?php endif; ?>
+
+<?php
+if (Auth::isAdmin()) {
+    require 'courses_admin.php';
+} else {
+    require 'courses_user.php';
+}
+?>
+
+
 <div class='content'>
     <?php
     $page = new Pagination($config);

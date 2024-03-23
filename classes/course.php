@@ -120,7 +120,7 @@ class Course
             $sql = "select c.id, c.name, c.description, c.price, c.image, c.video, c.duration, categories.name as category_name
                   from courses c
                   join categories on c.category_id = categories.id
-                  where (c.name like :search_term or c.description like :search_term)" ;
+                  where (c.name like :search_term or c.description like :search_term)";
             if (!$_SESSION['role_id'] == 1) {
                 $sql .= " and c.deleted = false )";
             }
@@ -406,4 +406,72 @@ class Course
             return -1;
         }
     }
+
+    public static function popularCategories($conn, $category_counts)
+    {
+        try {
+            $most_purchased_category_id = $category_counts[0]['category_id'];
+            $sql = "select id, name, description
+            from courses
+            where category_id = :category_id";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':category_id', $most_purchased_category_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $courses;
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public static function popularCourses($conn, $limit, $offset)
+    {
+        try {
+            $sql = "select c.id, c.name, c.description, c.price, c.image, c.video, c.duration, 
+                    categories.name as category_name, c.deleted, count(o.course_id) AS orders_count
+                    from courses c
+                    left join orders o ON c.id = o.course_id
+                    join categories on c.category_id = categories.id 
+                    where c.deleted = false
+                    group by c.id
+                    order by orders_count desc, c.name asc
+                    limit :limit
+                    offset :offset";
+            $stmt = $conn->prepare($sql);//limit: số record mỗi lần select
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            //offset: select từ record thứ mấy
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $courses;
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+    public static function popularCoursesAll($conn, $limit, $offset)
+    {
+        try {
+            $sql = "select c.id, c.name, c.description, c.price, c.image, c.video, c.duration, 
+                    categories.name as category_name, c.deleted, count(o.course_id) AS orders_count
+                    from courses c
+                    left join orders o ON c.id = o.course_id
+                    join categories on c.category_id = categories.id 
+                    group by c.id
+                    order by orders_count desc, c.name asc
+                    limit :limit
+                    offset :offset";
+            $stmt = $conn->prepare($sql);//limit: số record mỗi lần select
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            //offset: select từ record thứ mấy
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $courses;
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
 }
