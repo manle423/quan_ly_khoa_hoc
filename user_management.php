@@ -14,7 +14,7 @@ if (!$conn) {
 }
 
 Auth::requireLogin();
-$total = $_SESSION['role_id'] == 1 ? Course::countAll($conn) : Course::count($conn);
+$total = $_SESSION['role_id'] == 1 ? User::countAll($conn) : User::countUsers($conn);
 $limit = PAGE_SIZE;
 $currentpage = $_GET['page'] ?? 1;
 $config = [
@@ -74,6 +74,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
                 </tr>
             <?php endforeach; ?>
         </tbody>
+        <tfoot>
+            <tr>
+                <th colspan=4 style="text-align:center;">Tổng số account: </td>
+                <td colspan=3 style=><? echo $config['total']?></td>
+            </tr>
+            
+        </tfoot>
     </table>
 <?php else : ?>
     <p>Không tìm thấy kết quả phù hợp</p>

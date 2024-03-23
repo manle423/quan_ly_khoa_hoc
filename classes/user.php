@@ -256,4 +256,29 @@ class User
             return false;
         }
     }
+
+    //Hàm đếm số records
+    public static function countUsers($conn)
+    {
+
+        try {
+            $sql = "select count(id) from users where role_id = 2";
+            return $conn->query($sql)->fetchColumn();
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+            return -1;
+        }
+    }
+
+    public static function countAll($conn)
+    {
+
+        try {
+            $sql = "select count(id) from users";
+            return $conn->query($sql)->fetchColumn();
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+            return -1;
+        }
+    }
 }
