@@ -25,7 +25,7 @@ $config = [
 ];
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
     $search = $_GET['search'];
-    $courses = Course::searchCoursePaging($conn, $search, $limit, ($currentpage - 1) * $limit);
+    $courses = Course::searchPopularPaging($conn, $search, $limit, ($currentpage - 1) * $limit);
     // $courses = Course::searchCourse($conn, $search);
 } else {
     $courses = $_SESSION['role_id'] == 1 ?

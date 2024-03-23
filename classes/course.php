@@ -474,4 +474,36 @@ class Course
         }
     }
 
+    public static function searchPopularPaging($conn, $search, $limit, $offset)
+{
+    try {
+        $sql = "SELECT c.id, c.name, c.description, c.price, c.image, c.video, c.duration, 
+                categories.name AS category_name, c.deleted
+                FROM courses c
+                JOIN categories ON c.category_id = categories.id
+                LEFT JOIN orders o ON c.id = o.course_id
+                WHERE (c.name LIKE :search_term OR c.description LIKE :search_term) ";
+                
+        if (!$_SESSION['role_id'] == 1) {
+            $sql .= "AND c.deleted = false ";
+        }
+        
+        $sql .= "GROUP BY c.id
+                 ORDER BY COUNT(o.course_id) DESC, c.name ASC
+                 LIMIT :limit
+                 OFFSET :offset";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(':search_term', "%$search%", PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    } catch (PDOException $ex) {
+        echo $ex->getMessage();
+        return null;
+    }
+}
+
 }
