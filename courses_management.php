@@ -91,13 +91,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
                 </tr>
             <? endforeach; ?>
         </tbody>
-        <tfoot>
+        <?if (!isset($_GET['search'])) :?>
+            <tfoot>
             <tr>
                 <th colspan=4 style="text-align:center;">Tổng số khóa học: </td>
                 <td colspan=3 style=><? echo $config['total']?></td>
             </tr>
             
         </tfoot>
+        <?endif;?>
+        
     </table>
 <?php else : ?>
     <p>Không tìm thấy kết quả phù hợp</p>
