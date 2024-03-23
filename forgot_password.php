@@ -5,6 +5,8 @@ layouts();
 
 
 
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn = require 'inc/db.php';
     // Kiểm tra xem người dùng đã nhập email hay chưa
