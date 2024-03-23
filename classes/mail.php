@@ -22,7 +22,7 @@ class Mail
             $mail->SMTPSecure = false; //Thêm dòng này
             $mail->SMTPSecure = ''; //Thêm dòng này
             $mail->SMTPAuth = true;
-            $mail->SMTPDebug = SMTP::DEBUG_SERVER; //Thêm dòng này
+            // $mail->SMTPDebug = SMTP::DEBUG_SERVER; //Ẩn dòng này nếu hết debug
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = 'shinpham.mg5@gmail.com';

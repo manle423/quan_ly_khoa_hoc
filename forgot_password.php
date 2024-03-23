@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             
             // Cập nhật mật khẩu mới vào cơ sở dữ liệu
-            User::updatePassword($conn, $email, $newPassword);
+            User::updatePasswordByEmail($conn, $email, $newPassword);
 
         } else {
             Dialog::show('Email không tồn tại trong hệ thống');

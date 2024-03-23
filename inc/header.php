@@ -30,9 +30,9 @@
 
         <nav class="navbar">
             <a href="index.php">Home</a>
-            <a href="myaccount.php">My Account</a>
 
             <?php if (Auth::isLoggedIn()) : ?>
+            <a href="myaccount.php">My Account</a>
                 <?php if (Auth::isAdmin()) : ?>
                     <a href="user_management.php" class="text">User Management</a>
                 <?php elseif (Auth::isUser()) : ?>
