@@ -16,11 +16,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (User::emailExists($conn, $email)) {
             // Tạo mật khẩu mới ngẫu nhiên
             $newPassword = generateRandomPassword();
-            Mail::sendMail('andinhtran123@gmail.com',$email,"New Password",$newPassword);
+            Mail::sendMail('shinpham.mg5@gmail.com',$email,"New Password",$newPassword);
             
-            
+            echo $newPassword;
             // Cập nhật mật khẩu mới vào cơ sở dữ liệu
-            User::updatePassword($conn, $email, $newPassword);
+            User::updatePasswordByEmail($conn, $email, $newPassword);
+            
 
         } else {
             Dialog::show('Email không tồn tại trong hệ thống');
