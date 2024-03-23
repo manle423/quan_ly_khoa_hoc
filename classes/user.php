@@ -119,13 +119,17 @@ class User
         }
     }
 
-    public static function searchUser($conn, $search)
+    public static function searchUser($conn, $search, $limit, $offset)
     {
         try {
             $sql = "select u.id, u.name, u.email, u.username, u.address, u.is_active, u.role_id from users u
-                    where (u.id like :search_term or u.name like :search_term or u.username like :search_term);";
+                    where (u.id like :search_term or u.name like :search_term or u.username like :search_term)
+                    limit :limit
+                    offset :offset;";
             $stmt = $conn->prepare($sql);
             $stmt->bindValue(':search_term', "%$search%", PDO::PARAM_STR);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->setFetchMode(PDO::FETCH_ASSOC);
             if ($stmt->execute()) {
                 $users = $stmt->fetchAll();
@@ -177,6 +181,37 @@ class User
             return null;
         }
     }
+    public static function searchByRole($conn, $search, $role_id, $limit, $offset)
+    {
+        $sql = "SELECT u.id, u.name, u.email, u.username, u.address, u.is_active, u.role_id 
+            FROM users u
+            WHERE (u.id LIKE :search_term OR u.name LIKE :search_term OR u.username LIKE :search_term)";
+
+        if (!empty($role_id)) {
+            $sql .= " AND u.role_id = :role";
+        }
+
+        $sql .= " LIMIT :limit OFFSET :offset;";
+
+        $stmt = $conn->prepare($sql);
+
+        $search = isset($_GET['search']) ? $_GET['search'] : '';
+        
+        if (!empty($role_id)) {
+            $stmt->bindValue(':role', $role_id, PDO::PARAM_INT);
+        }
+
+        $stmt->bindValue(':search_term', "%$search%", PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+        if ($stmt->execute()) {
+            $users = $stmt->fetchAll();
+            return $users;
+        }
+    }
+
 
 
     public static function deactiveUser($conn, $id)

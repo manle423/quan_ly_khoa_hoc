@@ -25,31 +25,18 @@ $config = [
     'full' => false,
 ];
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $role = isset($_GET['role']) ? $_GET['role'] : '';
     $status = isset($_GET['status']) ? $_GET['status'] : '';
     $search = isset($_GET['search']) ? $_GET['search'] : '';
-    $users = User::searchByRoleAndStatus($conn, $search, $role, $status, $limit, ($currentpage - 1) * $limit);
-} else {
-    $users = User::getPaging($conn, $limit, ($currentpage - 1) * $limit);
+    if ($search === '' && $status === '' && $role === '') {
+        $users = User::getPaging($conn, $limit, ($currentpage - 1) * $limit);
+    } elseif ($search !== '' && ($status === '' && $role === '')) {
+        $users = User::searchUser($conn, $search, $limit, ($currentpage - 1) * $limit);
+    }else{
+        $users = User::searchByRole($conn, $search, $role, $limit, ($currentpage - 1) * $limit);
+    }
 }
-
-// if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
-//     $role = isset($_GET['role']) ? $_GET['role'] : '';
-//     $status = isset($_GET['status']) ? $_GET['status'] : '';
-//     $search = isset($_GET['search']) ? $_GET['search'] : '';
-//     $users = User::searchByRoleAndStatus($conn, $search, $role, $status, $limit, ($currentpage - 1) * $limit);
-// } else {
-//     $users = User::getPaging($conn, $limit, ($currentpage - 1) * $limit);
-// }
-
-// echo '<pre>';
-// print_r($users);
-// echo '</pre>';
-
-// foreach ($status as $key => $value) {
-//     echo $value . '<br>';
-// }
 
 ?>
 <? layouts(); ?>
@@ -62,11 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
         <?php foreach ($roles as $role) : ?>
             <option value="<?= $role['id'] ?>" <?= isset($_GET['role']) && $_GET['role'] == $role['id'] ? 'selected' : ''; ?>><?= $role['name'] ?></option>
         <?php endforeach; ?>
-    </select>
-    <select name="status" id="status">
-        <option value="" <?php echo !isset($_GET['status']) ? 'selected' : ''; ?>>Tất cả trạng thái</option>
-        <option value="1">Active</option>
-        <option value="0">Inactive</option>
     </select>
     </select>
 
