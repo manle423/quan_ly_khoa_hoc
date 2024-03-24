@@ -27,11 +27,10 @@ $config = [
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $role = isset($_GET['role']) ? $_GET['role'] : '';
-    $status = isset($_GET['status']) ? $_GET['status'] : '';
     $search = isset($_GET['search']) ? $_GET['search'] : '';
     if ($search === '' && $status === '' && $role === '') {
         $users = User::getPaging($conn, $limit, ($currentpage - 1) * $limit);
-    } elseif ($search !== '' && ($status === '' && $role === '')) {
+    } elseif ($search !== '' && $role === '') {
         $users = User::searchUser($conn, $search, $limit, ($currentpage - 1) * $limit);
     }else{
         $users = User::searchByRole($conn, $search, $role, $limit, ($currentpage - 1) * $limit);

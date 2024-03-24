@@ -183,15 +183,15 @@ class User
     }
     public static function searchByRole($conn, $search, $role_id, $limit, $offset)
     {
-        $sql = "SELECT u.id, u.name, u.email, u.username, u.address, u.is_active, u.role_id 
-            FROM users u
-            WHERE (u.id LIKE :search_term OR u.name LIKE :search_term OR u.username LIKE :search_term)";
+        $sql = "select u.id, u.name, u.email, u.username, u.address, u.is_active, u.role_id 
+            from users u
+            where (u.id like :search_term or u.name like :search_term or u.username like :search_term)";
 
         if (!empty($role_id)) {
-            $sql .= " AND u.role_id = :role";
+            $sql .= " and u.role_id = :role";
         }
 
-        $sql .= " LIMIT :limit OFFSET :offset;";
+        $sql .= " limit :limit offset :offset;";
 
         $stmt = $conn->prepare($sql);
 
@@ -242,7 +242,7 @@ class User
     public static function isUserActive($conn, $identifier)
     {
         try {
-            $sql = "select is_active from users where email = :email OR username = :username";
+            $sql = "select is_active from users where email = :email or username = :username";
             $stmt = $conn->prepare($sql);
             $stmt->bindValue(':email', $identifier, PDO::PARAM_STR);
             $stmt->bindValue(':username', $identifier, PDO::PARAM_STR);
