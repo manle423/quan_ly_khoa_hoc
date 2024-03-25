@@ -28,7 +28,7 @@ $config = [
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $role = isset($_GET['role']) ? $_GET['role'] : '';
     $search = isset($_GET['search']) ? $_GET['search'] : '';
-    if ($search === '' && $status === '' && $role === '') {
+    if ($search === '' && $role === '') {
         $users = User::getPaging($conn, $limit, ($currentpage - 1) * $limit);
     } elseif ($search !== '' && $role === '') {
         $users = User::searchUser($conn, $search, $limit, ($currentpage - 1) * $limit);
