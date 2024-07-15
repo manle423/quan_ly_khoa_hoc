@@ -263,4 +263,23 @@ class Order
             return false;
         }
     }
+
+    public static function countCourseByCategory($conn, $user_id){
+        try{
+            $sql = "select c.category_id, count(*) AS num_courses
+            from orders o
+            join courses c on o.course_id = c.id
+            where o.user_id = :user_id
+            group by c.category_id
+            order by num_courses DESC";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $category_counts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $category_counts;
+        }catch(PDOException $e){
+            echo $e->getMessage();
+        }
+        
+    }
 }

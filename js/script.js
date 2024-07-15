@@ -268,6 +268,19 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+// ham xu ly nut cancel trong cac form
+document.addEventListener("DOMContentLoaded", function () {
+  var buttons = document.querySelectorAll(".btnReset");
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      history.back();
+    });
+  });
+});
+
+
+
+
 // ham xu ly nut dang xuat
 document.addEventListener("DOMContentLoaded", function () {
   var logoutBtn = document.getElementById("btnLogOut");
@@ -297,6 +310,15 @@ document.addEventListener("DOMContentLoaded", function () {
   if (btn) {
     btn.addEventListener("click", function () {
       window.location.href = "addcourse.php";
+    });
+  }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  var btn = document.getElementById("btnAddUser");
+  if (btn) {
+    btn.addEventListener("click", function () {
+      window.location.href = "adduser.php";
     });
   }
 });
